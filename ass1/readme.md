@@ -1,2 +1,3 @@
 - stackoverflow.com/questions/3889992/how-does-strtok-split-the-string-into-tokens-in-c
 -  https://www.geeksforgeeks.org/fork-system-call/
+- https://stackoverflow.com/questions/27158670/waitpid-not-waiting-for-child
