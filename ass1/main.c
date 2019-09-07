@@ -5,43 +5,52 @@
 #include <sys/wait.h>
 #include <string.h>
 
+// Executes system calls: fork and execv with
+// given parameters. 
+void execute(char ** args);
+
 int main(int argc, char *argv[]){
 	while(1){
-		
-		//char* command = (char*) malloc(20 * sizeof(char)); 
-		int status; 
+	       	int arg_num = 0;	
 		char input[30];
-		char * argv[10];
-		//argv[0] = NULL;
-		argv[1] = NULL;
-		argv[2] = NULL;
-		printf("$");
-		//scanf("%s", cmd);
-		fgets(input, 29, stdin);
-		char * cmd = strtok(input, " \n");	
-		argv[0] = cmd;
-		argv[1] = strtok(NULL, " \n");
-
-		pid_t p = fork();
-		//printf("%d", p);
+		char * args[10];
 		
-		if(p != 0){
-			// Parent code
-			//printf("parent");
-			waitpid(-1,&status,0);
-		} else {
-			printf("child");
-			printf("%s", cmd);
-			execvp(cmd, argv);
-			printf("\n");
+		printf("$");
+		fgets(input, 29, stdin);
+		
+		// Split input to tokens(array of arugments)
+		char * cmd = strtok(input, " \n");		
+		while(cmd != NULL){
+			args[arg_num] = cmd;
+			cmd = strtok(NULL, " \n");
+			arg_num++;
 		}
+		// The last argument should be NULL
+		args[arg_num] = NULL;
+		if(!strcmp(args[0],"exit")){
+			break;
+		}	
+		execute(args);
 	}
 	
 	return 0;
 }
-/*
- * waitpid
- *
- * command line argument into array
- *
- */
+
+void execute(char ** args) {
+		int status;
+		pid_t p = fork();
+		
+		if(p == 0){
+			//printf("child");
+			//printf("%s", args[0]);
+			execvp(args[0], args);
+			printf("Error");
+			printf("\n");
+		} else {	
+			//printf("parent");
+			waitpid(p,&status,0);
+			//printf("Done waiting\n");
+		}
+
+}
+
