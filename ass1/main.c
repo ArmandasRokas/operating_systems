@@ -5,6 +5,8 @@
 #include <sys/wait.h>
 #include <string.h>
 
+#define INPUT_LEN 30
+#define MAX_ARGS 10
 // Executes system calls: fork and execv with
 // given parameters. 
 void execute(char ** args);
@@ -12,11 +14,11 @@ void execute(char ** args);
 int main(int argc, char *argv[]){
 	while(1){
 	       	int arg_num = 0;	
-		char input[30];
-		char * args[10];
+		char input[INPUT_LEN];
+		char * args[MAX_ARGS];
 		
 		printf("$");
-		fgets(input, 29, stdin);
+		fgets(input, INPUT_LEN, stdin);
 		
 		// Split input to tokens(array of arugments)
 		char * cmd = strtok(input, " \n");		
