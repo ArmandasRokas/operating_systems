@@ -4,3 +4,4 @@
 - https://www.geeksforgeeks.org/pipe-system-call/
 - https://stackoverflow.com/questions/33912024/shell-program-with-pipes-in-c
 - https://indradhanush.github.io/blog/writing-a-unix-shell-part-2/
+- About pipe closing : https://www.tldp.org/LDP/lpg/node11.html
