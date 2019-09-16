@@ -51,23 +51,18 @@ int main(int argc, char *argv[]){
 		for(pipeIndex = 0; pipeIndex < arg_num; pipeIndex++){
 			if(strcmp(args[pipeIndex], "|") == 0){
 				isPipeFound = 1;
-				printf("Pipe found \n");
 				break;
 			}
 		}
 
 		if(isPipeFound){
-			printf("Executing pipe");
-			printf("Pipe index %d \n" , pipeIndex);
 			for(int z = 0; z < pipeIndex; z++){
 				args1[z] = args[z];
-				printf("isPipeFound %s", args1[z]);
 			}
 
 			int k=0;
 			for(int d = pipeIndex+1; d < arg_num; d++){
 				args2[k] = args[d];
-				printf("isPipeFound %s ", args2[k]);
 				k++;	
 			}
 			
@@ -79,7 +74,7 @@ int main(int argc, char *argv[]){
 				//child
 				//char * testArgs[] = {"./executePipe", args};
 				//execvp(testArgs[0], testArgs);  
-				executePipe(args1, args2);
+			executePipe(args1, args2);
 			//} else {
 			//	waitpid(p, &status, 0);
 			//}
@@ -114,22 +109,29 @@ void execute(char ** args) {
 
 void executePipe(char ** args1, char ** args2){
 	int status;
-	int fds[2];
-	pipe(fds);
-	int i;
+	// fds[0] is set up for reading, fds[1] is set up for writing
+	// int i;
 	pid_t p = fork();
-	
-	if(p==0){ 
-		// child process
-		close(fds[1]);
-		dup2(fds[0],0);
-		execvp(args2[0], args2);
-	} else{
-		// parent process
-		close(fds[0]);
-		dup2(fds[1],1);
-		execvp(args1[0], args1);
-	}
+	if(p==0){
+		int fds[2];
+		pipe(fds);
+		pid_t p2 = fork();
+		if(p2!=0){ 
+			// child process
+			close(fds[1]); 
+			// grep læser fra stdin, som bliver streamet fra fds[0]
+			dup2(fds[0],0); //stdin.. The process is suspended until something is written. 
+			//dup system call creates a copy of a file descriptor
+			execvp(args2[0], args2);
+		} else{
+			// parent process. Should finish job last in order to waitpid() to work
+			close(fds[0]);
+			dup2(fds[1],1); //stdout
+			execvp(args1[0], args1);
+		}
+	} else {
+		waitpid(p, &status, 0); // wait for a child who is a parent of an another child
+	}  
 		
 }
 
