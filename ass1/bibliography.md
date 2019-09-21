@@ -1,0 +1,8 @@
+- stackoverflow.com/questions/3889992/how-does-strtok-split-the-string-into-tokens-in-c
+-  https://www.geeksforgeeks.org/fork-system-call/
+- https://stackoverflow.com/questions/27158670/waitpid-not-waiting-for-child
+- https://www.geeksforgeeks.org/pipe-system-call/
+- https://stackoverflow.com/questions/33912024/shell-program-with-pipes-in-c
+- https://indradhanush.github.io/blog/writing-a-unix-shell-part-2/
+- About pipe closing : https://www.tldp.org/LDP/lpg/node11.html
+- https://www.geeksforgeeks.org/dup-dup2-linux-system-call/
