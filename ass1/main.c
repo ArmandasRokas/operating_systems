@@ -97,7 +97,7 @@ void execute(char ** args) {
 			//printf("child");
 			//printf("%s", args[0]);
 			execvp(args[0], args);
-			printf("Error");
+			printf("Command is not found");
 			printf("\n");
 		} else {	
 			//printf("parent");
