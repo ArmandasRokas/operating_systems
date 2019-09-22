@@ -1,32 +1,22 @@
-/*
- * Opgave 1:
- *Finde en måde til ' måske med for loop
- *som tjekker, hvis det en ' så lave 
- * mellemrum i stedet
- *
- * Opgave 2:
- * Crashes on empty input
- */
-
 #include <stdio.h>
 #include <malloc.h>
 #include <sys/types.h>
 #include <unistd.h>
 #include <sys/wait.h>
 #include <string.h>
+#include <stdlib.h>
 
 #define INPUT_LEN 30
 #define MAX_ARGS 10
-// Executes system calls: fork and execv with
-// given parameters. 
-void execute(char ** args);
-void executePipe(char ** args1, char ** args2);
+
+void executeCommand(char ** args);
+void executeCommandWithPipe(char ** args1, char ** args2);
 
 int main(int argc, char *argv[]){
 	while(1){
 	       	int arg_num = 0;	
-		char input[INPUT_LEN];
-		char * args[MAX_ARGS];
+		char input[INPUT_LEN] = "\n";
+		char * args[MAX_ARGS] = {0};
 		char * args1[MAX_ARGS] = {0};
 		char * args2[MAX_ARGS] = {0};
 		int isPipeFound = 0;
@@ -34,7 +24,7 @@ int main(int argc, char *argv[]){
 		
 		printf("$");
 		fgets(input, INPUT_LEN, stdin); 
-		
+	        // Check if input is not empty	
 		if(!strcmp(input,"\n")){
 			printf("Enter a command\n");
 			continue;
@@ -65,46 +55,26 @@ int main(int argc, char *argv[]){
 			for(int z = 0; z < pipeIndex; z++){
 				args1[z] = args[z];
 			}
-
 			int k=0;
 			for(int d = pipeIndex+1; d < arg_num; d++){
 				args2[k] = args[d];
 				k++;	
 			}
-			
-			
-			
-			//int status;
-			//pid_t p = fork();
-			//if(p == 0){
-				//child
-				//char * testArgs[] = {"./executePipe", args};
-				//execvp(testArgs[0], testArgs);  
-			executePipe(args1, args2);
-			//} else {
-			//	waitpid(p, &status, 0);
-			//}
+			executeCommandWithPipe(args1, args2);
 		} else {
-			execute(args);
+			executeCommand(args);
 		}
-
-
-
 	}
-	
 	return 0;
 }
 
-void execute(char ** args) {
+void executeCommand(char ** args) {
 		int status;
 		pid_t p = fork(); 
-		
 		if(p == 0){
-			//printf("child");
-			//printf("%s", args[0]);
+			// child process
 			execvp(args[0], args);
-			printf("The entered command does not exists");
-			printf("\n");
+			printf("The entered command does not exists\n");
 		} else {	
 			// parent process
 			// p contains PID of the child
@@ -113,7 +83,7 @@ void execute(char ** args) {
 
 }
 
-void executePipe(char ** args1, char ** args2){
+void executeCommandWithPipe(char ** args1, char ** args2){
 	int status;
 	pid_t p = fork();
 	if(p==0){
@@ -128,16 +98,19 @@ void executePipe(char ** args1, char ** args2){
 			// grep læser fra stdin, som bliver streamet fra fds[0]
 			dup2(fds[0],0); //stdin reads from pipe. The process is suspended until something is written. 
 			execvp(args2[0], args2);
+			printf("The entered command does not exists\n");
+			exit(-1);
 		} else{
 			// child process
 			// executes the first command
 			close(fds[0]); // close pipe for reading, because it should only write
 			dup2(fds[1],1); //stdout writes to pipe
 			execvp(args1[0], args1);
+			printf("The entered command does not exists\n");
+			exit(-1);
 		}
 	} else {
-		waitpid(p, &status, 0); // wait for a child who is a parent of an another child
+		waitpid(p, &status, 0); // waits for a child who is a parent of an another child
 	}  
-		
 }
 
