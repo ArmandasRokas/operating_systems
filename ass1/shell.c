@@ -82,7 +82,10 @@ void executeCommand(char ** args) {
 		}
 
 }
-
+/*
+This function is made by using this code as an example:
+https://stackoverflow.com/questions/33912024/shell-program-with-pipes-in-c
+*/
 void executeCommandWithPipe(char ** args1, char ** args2){
 	int status;
 	pid_t p = fork();

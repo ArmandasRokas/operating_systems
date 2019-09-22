@@ -1,108 +1,59 @@
 ## The manual of the shell
 Author: Armandas Rokas (s185144)
+21/9 2019
 
 ### Intro
 
-This manual describes the features of the shell application and how the shell is implemented. 
+This manual describes the features and the implementation of the shell application. The shell works as a command interpreter by taking an user input as a command and executing that.
 
 ### Quick start
 
 1. `gcc -o shell shell.c`
 2. `./shell`
-3. Write your favorite command e.g. `ls`
+3. Write your favorite command e.g. `ls -l | greb shell` 
 
 ### Features
 
-- Up to 9 separate arguments beside the actual command. 
-- The pipe, where you can use one programs output as another program inputs. For example `ls -l | grep somestring`.  
-
-
+- Up to 9 separate arguments.
+- Pipe, which allows to use first commands output as another commands inputs. 
 
 ### Code documentation
 
-The shell is implemented like so. Firstly, it reads a command from stdin and parse it into arguments. Then the shell tries to find a program file in the shells  environment. 
+The shell is implemented as follows. Firstly, it reads a command from stdin and parses it into separate arguments. Then the shell tries to find a program file in the shells  environment. 
 
 #### The shells environment
+The shells environment depends on whether a command contains `/` or not. If a command contains `/`, so the environment can be absolute or a relative. Absolute if it starts with `/` or relative if does not start with `/`. 
 
-The shell environment is defined in `$PATH` variable, which is just a list of directories.  
-
-If the command contains slash so 
-
-
+If a command does not contain `/` at all, so the shell looks for an executable application in one of directories listed in the `$PATH` environment variable, because there is used `execvp()` system call, which is explained more in details below.
 
 #### System calls
-
-To execute a command there are used three-four different system calls depends on whether command includes a pipe or not.  Explain system calls generally
+In order to execute a command there are used three to five different system calls depends on whether the entered command includes a pipe or not. System calls is basically used for interaction with a kernel in order to get some resources (RAM, hardware)/services, which is not available in User mode. 
 
 ##### fork()
 
+The first system call is `fork()`. It is used in order to create an exact copy of a process named a child process. However at first the child process points to the same memory allocations as the parent process do and just after mutation it redirects to another location. It is done like this because of optimization. 
+A child process has the same program counter(pc), CPU registers and open files as the parent process.
+`fork()` can return either negative value, zero or positive value. Negative is of course when creation was unsuccessful. Zero if it is returned to child process. And positive value if it is returned to parent and the value contains PID of the child. 
+
 ##### execvp()
+
+The second system call that is used in the shell application is `execvp()`. `execvp()` launches a new program in the child process replacing address space, text segment(program code), data segment(static variables). Only process ID, environment and file descriptor remains the same.  
 
 
 ##### wait()
 
+`wait()` system call is used in the parent process in order to wait (run in the background) until the child process terminates. That means that the shell waits until command executed before an user can enter a new command. 
+
 ##### pipe()
 
+The `pipe()` is used in order to communicate between two the parent and processes. It creates a "virtual file", so that one process writes to this and another reads. 
 
 
+##### dup2() for I/O redirection
 
-### Notes
-
- and execute runs executable with given input. If the executable is not found , the minishell prints the error massage. The default path, where the minishell looks for executable is `/bin` and `/usr/bin`. 
-
-It executes binary applications in /bin directory by giving there names as input in the shell. For example `ls` or `top`
-
-
-
-
-
-Program environment er $Path, som bruger execvp??, but it is possible to give an absolute path too. Like try ./home/helloworld
-
-
-
-- https://www.wikihow.com/Check-Path-in-Unix - Step 2
-- Answer 2: https://stackoverflow.com/questions/19205316/execvp-filepath-clarification
-- https://linux.die.net/man/3/execvp
-
-### fork()
-
-The minishell uses `fork()` fdunction to create a new process and executes an applictation in the process by using `execvp()` function
-
- tries to find application in the system related to the input and executes that. If the application not found error message is printed. 
-
-looks for executables in `/bin` `/user/bin` and `/usr/share` as input
-
-###   pipe
-
-https://stackoverflow.com/questions/9834086/what-is-a-simple-explanation-for-how-pipes-work-in-bash
-
-
-
+`dup2()` is used together with`pipe()`. It makes a file descriptor of `stdout` point to the end of the pipe that writes to "virtual file" in the first process (executes the first command). And a file descriptor of `stdin` point to the end of the pipe that reads from the pipe in the other process (executes the second command).
 
 ### Some existing bugs: 
 
-- Program crashes when entered a empty command
-- using `grep` with a string in quotation marks  
-
-### Concepts of systems calls
-
-- e.ks. fork() . Hvad gør det og hvorfor, jeg har bugt dem
-
-
-
-To execute a program, Bash calls `fork` (or maybe `vfork` or some other variant), which creates a new “child” process that is nearly a copy of the original “parent” one. This child process then makes the `execve` system call, which replaces its own program with the program requested. Then Bash calls some version of the system call `wait` in order to wait until the child process terminates.
-
-### I/O redirection
-
-- 
-
-### The program environment
-
-- 
-
-### Background program execution
-
-- 
-
-Traps
+- Using `grep` with a string in quotation marks does not return an expected result . E.g. `ls -l | grep 'shell'` wont work, but `ls -l | grep shell` works.
 
