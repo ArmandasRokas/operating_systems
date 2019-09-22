@@ -33,8 +33,13 @@ int main(int argc, char *argv[]){
 		int pipeIndex;
 		
 		printf("$");
-		fgets(input, INPUT_LEN, stdin);
+		fgets(input, INPUT_LEN, stdin); 
 		
+		if(!strcmp(input,"\n")){
+			printf("Enter a command\n");
+			continue;
+		}
+
 		// Split input to tokens(array of arugments)
 		char * cmd = strtok(input, " \n");		
 		while(cmd != NULL){
@@ -47,6 +52,7 @@ int main(int argc, char *argv[]){
 		if(!strcmp(args[0],"exit")){
 			break;
 		}	
+		
 		// Search for pipe
 		for(pipeIndex = 0; pipeIndex < arg_num; pipeIndex++){
 			if(strcmp(args[pipeIndex], "|") == 0){
@@ -91,42 +97,42 @@ int main(int argc, char *argv[]){
 
 void execute(char ** args) {
 		int status;
-		pid_t p = fork();
+		pid_t p = fork(); 
 		
 		if(p == 0){
 			//printf("child");
 			//printf("%s", args[0]);
 			execvp(args[0], args);
-			printf("Command is not found");
+			printf("The entered command does not exists");
 			printf("\n");
 		} else {	
-			//printf("parent");
+			// parent process
+			// p contains PID of the child
 			waitpid(p,&status,0);
-			//printf("Done waiting\n");
 		}
 
 }
 
 void executePipe(char ** args1, char ** args2){
 	int status;
-	// fds[0] is set up for reading, fds[1] is set up for writing
-	// int i;
 	pid_t p = fork();
 	if(p==0){
-		int fds[2];
+		int fds[2]; // fds[0] is for reading and, fds[1] for writing
 		pipe(fds);
 		pid_t p2 = fork();
 		if(p2!=0){ 
-			// child process
-			close(fds[1]); 
+			// parent process
+			// executes the second command
+			// Should terminates last in order to waitpid() one level above to work
+			close(fds[1]); // close pipe for writing, because it should only read
 			// grep læser fra stdin, som bliver streamet fra fds[0]
-			dup2(fds[0],0); //stdin.. The process is suspended until something is written. 
-			//dup system call creates a copy of a file descriptor
+			dup2(fds[0],0); //stdin reads from pipe. The process is suspended until something is written. 
 			execvp(args2[0], args2);
 		} else{
-			// parent process. Should finish job last in order to waitpid() to work
-			close(fds[0]);
-			dup2(fds[1],1); //stdout
+			// child process
+			// executes the first command
+			close(fds[0]); // close pipe for reading, because it should only write
+			dup2(fds[1],1); //stdout writes to pipe
 			execvp(args1[0], args1);
 		}
 	} else {
