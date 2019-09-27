@@ -30,7 +30,7 @@ int main(int argc, char *argv[]){
 			continue;
 		}
 
-		// Split input to tokens(array of arugments)
+		// Split input to tokens(array of arugments) . References: 1 in Bibliography
 		char * cmd = strtok(input, " \n");		
 		while(cmd != NULL){
 			args[arg_num] = cmd;
@@ -83,7 +83,7 @@ void executeCommand(char ** args) {
 
 }
 /*
-This function is made by using this code as an example:
+This function is made by using a code example from the link below:
 https://stackoverflow.com/questions/33912024/shell-program-with-pipes-in-c
 */
 void executeCommandWithPipe(char ** args1, char ** args2){

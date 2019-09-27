@@ -4,7 +4,7 @@ Author: Armandas Rokas (s185144)
 
 ### Intro
 
-This manual describes the features and the implementation of the shell application. The shell works as a command interpreter by taking an user input as a command and executing that.
+This manual describes the features and the implementation of the shell application. The shell works as a command interpreter by reading an user input as a command and executing that.
 
 ### Quick start
 
@@ -26,8 +26,16 @@ The shells environment depends on whether a command contains `/` or not. If a co
 
 If a command does not contain `/` at all, so the shell looks for an executable application in one of directories listed in the `$PATH` environment variable, because there is used `execvp()` system call, which is explained more in details below.
 
+###### References: 
+
+8, 14, 15 in Bibliography 
+
 #### System calls
 In order to execute a command there are used three to five different system calls depends on whether the entered command includes a pipe or not. System calls is basically used for interaction with a kernel in order to get some resources (RAM, hardware)/services, which is not available in User mode. 
+
+###### References: 
+
+17 in Bibliography 
 
 ##### fork()
 
@@ -35,23 +43,43 @@ The first system call is `fork()`. It is used in order to create an exact copy o
 A child process has the same program counter(pc), CPU registers and open files as the parent process.
 `fork()` can return either negative value, zero or positive value. Negative is of course when creation was unsuccessful. Zero if it is returned to child process. And positive value if it is returned to parent and the value contains PID of the child. 
 
+###### References: 
+
+1, 5, 8, 9, 10,11  in Bibliography 
+
 ##### execvp()
 
 The second system call that is used in the shell application is `execvp()`. `execvp()` launches a new program in the child process replacing address space, text segment(program code), data segment(static variables). Only process ID, environment and file descriptor remains the same.  
+
+###### References: 
+
+16  in Bibliography 
 
 
 ##### wait()
 
 `wait()` system call is used in the parent process in order to wait (run in the background) until the child process terminates. That means that the shell waits until command executed before an user can enter a new command. 
 
+###### References: 
+
+12  in Bibliography 
+
 ##### pipe()
 
 The `pipe()` is used in order to communicate between two the parent and processes. It creates a "virtual file", so that one process writes to this and another reads. 
+
+###### References: 
+
+3, 4, 6, 13 in Bibliography 
 
 
 ##### dup2() for I/O redirection
 
 `dup2()` is used together with`pipe()`. It makes a file descriptor of `stdout` point to the end of the pipe that writes to "virtual file" in the first process (executes the first command). And a file descriptor of `stdin` point to the end of the pipe that reads from the pipe in the other process (executes the second command).
+
+###### References: 
+
+7  in Bibliography 
 
 ### Some existing bugs: 
 
