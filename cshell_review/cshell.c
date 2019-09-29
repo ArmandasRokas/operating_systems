@@ -83,7 +83,8 @@ int main (void) {
 
         if (strcmp(linje[0],"cd") == 0) {
             chdir(linje[1]);
-            exit(EXIT_SUCCESS);
+            //exit(EXIT_SUCCESS);
+	    continue;
         }
 
         // Om der er en child process, venter programmet indtil den process er færdig
