@@ -1,0 +1,39 @@
+# Peer feedback of the assignment 1
+
+Reviewer : Armandas Rokas
+
+Author of the assignment:  Jákup Vuljam Dam
+
+09/29 - 2019
+
+## System calls used:
+
+- `chdir()`
+- `exit()`
+- `fork()`
+- `execvp()`
+- `wait()`
+##  Can the shell receive commands with arguments?
+
+- Yes. A command `ls -a -l` is tested and it gives an expected result. 
+
+## Can the shell use input redirection?
+
+- Neither `>` nor `|` is implemented in the shell.
+
+## Does the shell use the system variable $PATH?
+
+- Yes. There is used `execvp()` system call, which searches for an executable in directories defined in `$PATH`  variable, however only if a command does not include `/`.
+
+## How well is the program explained?
+
+- Extensive comments, which explains the code very well.
+
+## What have your learnt from the peers assignment?
+
+-  I learned that `cd` is build-in command in the bash and there is no such a executable in /bin/ directory like `cd`. So in order to change a directory in the shell`chdir()` system call should be used.
+- I also got deeper understanding what an input redirection is exactly, because it's explained very-well by Jákup in his report. 
+##  What would you have done differently.
+- There was noticed in the report that program exists, when `cd` is used. I fixed this bug simply by refactoring line 86 from `exit(EXIT_SUCCESS)` to `continue;`. After this `cd` works without any problem. 
+- There is missing the explanation of `Program Environment` in the rapport. And again the system call `execvp()` uses environment defined in `$PATH` variable.  
+- And of course Implement an input redirection and a pipe function.  

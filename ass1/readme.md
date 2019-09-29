@@ -85,3 +85,12 @@ The `pipe()` is used in order to communicate between two the parent and processe
 
 - Using `grep` with a string in quotation marks does not return an expected result . E.g. `ls -l | grep 'shell'` wont work, but `ls -l | grep shell` works.
 
+
+
+## Notes after hand-in
+
+Pipe is used to pass output to another **program or utility**.
+
+Redirect is used to pass output to either a **file or stream**.
+
+https://askubuntu.com/questions/172982/what-is-the-difference-between-redirection-and-pipe

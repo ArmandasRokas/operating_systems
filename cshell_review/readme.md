@@ -9,9 +9,8 @@ Denne readme vil give dig et indblik i hvordan en shell fungerer og hvordan man 
 
 Nedenfor er der en tutorial over hvordan man kompilerer programmet og kører det.
 
-
 1# : Kompilerer klassen
-        Brug kommandoen "gcc [klassenavn.c] -o [navn på filen der bliver genereret]"
+        Brug kommandoen "gcc [klassenavn.c] -o [navn på filen der bliver genereret]" 
 
 2# : Kør den genererede fil
         Brug kommandoen "./[navnet på filen]"
@@ -62,9 +61,21 @@ I shellen er der nogle specifikke kommandoer der kan bruges og de har jeg skreve
 
 
 
-
 NOTES:
-cd kommandoen virker ikke helt som den skal. Den laver en ny process hver gang den bliver kaldt og det
+cd kommandoen virker ikke helt som den skal. **Den laver en ny process hver gang den bliver kaldt** og det
 er ikke meningen. Dette gør så at når man flytter rundt i systemet med cd, skal man bruge "exit" lige så
 ofte, for at komme ud af shellen igen. Dette er et struktur problem i koden hos mig, men som et simpelt
 projekt, beviser det bare hvordan kommandoen bliver brugt.
+
+
+
+
+
+### Bugs:
+
+- Crashes on an empty string
+- Doesn't show error message if the entered command doesn't exist
+- Pipe does not implemented?  
+
+
+
