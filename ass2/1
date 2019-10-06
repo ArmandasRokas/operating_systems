@@ -1,0 +1,113 @@
+#include <stdio.h>
+#include <pthread.h>
+#include <stdlib.h>
+#define DB_NAME "users.dat"
+
+typedef struct user{
+	unsigned int id;
+	char username[20];
+} user;
+
+void createFileWithBlankUsers(int numOfUsers);
+void * putUser(void * userToPut);
+void printUsersToConsole();
+
+
+FILE * fPtr;  // users.dat file pointer
+pthread_t tid[5];
+
+int main(void)
+{
+	createFileWithBlankUsers(100);
+	user user1 = {1, "username1"};
+	user user2 = {2, "username2"};
+	user user3 = {3, "username3"};
+	user user4 = {4, "username4"};
+	user user5 = {5, "username5"};
+
+	void * users_p[5];
+	users_p[0] = &user1;
+	users_p[1] = &user2;
+	users_p[2] = &user3;
+	users_p[3] = &user4;
+	users_p[4] = &user5;
+
+
+	//iputUser(user1_p);
+	if(( fPtr = fopen(DB_NAME, "rb+")) == NULL)
+	{
+		printf("File could not be opened.");
+	} else {
+		int i = 0;
+		int error;
+		while(i<1){
+			error = pthread_create(&(tid[i]), NULL, &putUser, users_p[i]);
+			if(error != 0){
+				printf("Thread can't be created\n");
+			}
+			i++;
+		}
+		fclose(fPtr);
+	}
+
+	pthread_join(tid[0], NULL);
+	pthread_join(tid[1], NULL);
+	pthread_join(tid[2], NULL);
+	pthread_join(tid[3], NULL);
+	pthread_join(tid[4], NULL);
+	/*
+	putUser(users_p[1]);
+	putUser(users_p[2]);
+	putUser(users_p[3]);
+	putUser(users_p[4]);
+	*/
+	printUsersToConsole();
+	
+	// Excpeted array actual array
+	// Function test() som checker both arrays. 
+}
+
+
+void createFileWithBlankUsers(int numOfUsers){
+	unsigned int i; // counter used to count from 1-100
+	user blankUser = {0, ""};
+	if((fPtr = fopen(DB_NAME, "wb")) == NULL)
+	{
+		printf("File could not be opened.");
+	} else
+	{
+		for(i = 1; i <= numOfUsers; i++)
+		{
+			fwrite(&blankUser, sizeof(user), 1, fPtr);	
+		}
+		fclose(fPtr);
+	}
+}
+
+void * putUser(void *userToPut){
+	if(fPtr == NULL){
+		printf("File could not be opened\n");
+	} else {
+		fseek(fPtr, ( (*(user *)  userToPut).id - 1) * sizeof(user), SEEK_SET);
+		fwrite((user *)userToPut, sizeof(user), 1, fPtr);	
+	}
+}
+
+void printUsersToConsole(){
+	user blankUser = {0, ""};
+
+	if(( fPtr = fopen(DB_NAME, "rb")) == NULL)
+	{
+		printf("File could not be opened. \n");
+	}
+	printf("%-6s%-16s\n", "Id", "User name");
+
+	while(!feof(fPtr)){
+		fread(&blankUser, sizeof(user), 1, fPtr);
+		if(blankUser.id != 0){
+			printf("%-6d%-16s\n", blankUser.id, blankUser.username);
+		}
+	}
+	fclose(fPtr);
+}
+
