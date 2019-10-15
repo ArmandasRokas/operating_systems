@@ -2,7 +2,7 @@
 #include <pthread.h>
 #include <stdlib.h>
 #define DB_NAME "users.dat"
-#define NUM_USERS 100
+#define NUM_USERS 10
 
 typedef struct user{
 	unsigned int id;
@@ -21,7 +21,7 @@ int curr_id = 1;
 
 int main(void)
 {
-	createFileWithBlankUsers(NUM_USERS);
+	createFileWithBlankUsers(NUM_USERS+1);
 	/*
 	user user1 = {1, "username1"};
 	user user2 = {2, "username2"};
@@ -39,10 +39,10 @@ int main(void)
 
 	user users[NUM_USERS];
 	// set usernames that starts from 1 to NUM_USERS+1
-	for(int c = 0; c < NUM_USERS; c++){
+	for(int c = 1; c < NUM_USERS+1; c++){
 		//users[c].id = c;
 		//users[c].username = c+1 ;
-		sprintf(users[c].username, "username%d", c);
+		sprintf(users[c-1].username, "username%d", c);
 	}
 
 	void * users_p[NUM_USERS];
@@ -77,19 +77,19 @@ int main(void)
 		int i = 0;
 		int error;
 		while(i<NUM_USERS){
-			//putUser(users_p[i]);
-			error = pthread_create(&(tid[i]), NULL, &putUser, users_p[i]);
+			putUser(users_p[i]);
+			/*error = pthread_create(&(tid[i]), NULL, &putUser, users_p[i]);
 			if(error != 0){
 				printf("Thread can't be created\n");
-			}
+			}*/
 			i++;
 		}
 	}
 
 	fclose(fPtr);
-	for(int d = 0; d < NUM_USERS; d++){
+	/*for(int d = 0; d < NUM_USERS; d++){
 		pthread_join(tid[d],NULL);
-	}
+	}*/
 	/*
 	pthread_join(tid[0], NULL);
 	pthread_join(tid[1], NULL);
