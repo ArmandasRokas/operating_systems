@@ -2,11 +2,11 @@
 #include <pthread.h>
 #include <stdlib.h>
 #define DB_NAME "users.dat"
-#define NUM_USERS 10
+#define NUM_USERS 100
 
 typedef struct user{
 	unsigned int id;
-	int username;
+	char username[20];
 } user;
 
 void createFileWithBlankUsers(int numOfUsers);
@@ -41,7 +41,8 @@ int main(void)
 	// set usernames that starts from 1 to NUM_USERS+1
 	for(int c = 0; c < NUM_USERS; c++){
 		//users[c].id = c;
-		users[c].username = c+1 ;
+		//users[c].username = c+1 ;
+		sprintf(users[c].username, "username%d", c);
 	}
 
 	void * users_p[NUM_USERS];
@@ -116,8 +117,8 @@ int main(void)
 
 
 void createFileWithBlankUsers(int numOfUsers){
-	unsigned int i; // counter used to count from 1-100
-	user blankUser = {0, 0};
+	unsigned int i;
+	user blankUser = {0, ""};
 	if((fPtr = fopen(DB_NAME, "wb")) == NULL)
 	{
 		printf("File could not be opened.");
@@ -143,7 +144,7 @@ void * putUser(void *userToPut){
 }
 
 void printUsersToConsole(){
-	user blankUser = {0, 0};
+	user blankUser = {0, ""};
 
 	if(( fPtr = fopen(DB_NAME, "rb")) == NULL)
 	{
@@ -154,7 +155,7 @@ void printUsersToConsole(){
 	while(!feof(fPtr)){
 		fread(&blankUser, sizeof(user), 1, fPtr);
 		if(blankUser.id != 0){
-			printf("%-6d%-6d\n", blankUser.id, blankUser.username);
+			printf("%-6d%-16s\n", blankUser.id, blankUser.username);
 		}
 	}
 	fclose(fPtr);
