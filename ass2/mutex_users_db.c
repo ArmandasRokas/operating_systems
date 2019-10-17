@@ -2,7 +2,7 @@
 #include <pthread.h>
 #include <stdlib.h>
 #define DB_NAME "users.dat"
-#define NUM_USERS 10
+#define NUM_USERS 1000000
 
 typedef struct user{
 	unsigned int id;
@@ -48,10 +48,10 @@ int main(void)
 	createFileWithBlankUsers(NUM_USERS+1);
 	initUsers();
 
-	executePutUserParallel();
-	//executePutUserSequentially(); // Uncomment this in order to put user sequentially
+	//executePutUserParallel();
+	executePutUserSequentially(); // Uncomment this in order to put user sequentially
 
-	printUsersToConsole();
+	//printUsersToConsole();
 }
 
 
@@ -126,7 +126,7 @@ void executePutUserParallel(){
 	pthread_mutex_destroy(lock);
 }
 
-void executePutUserSequentially(){
+void executePutUserSequentially(){ // make a thread. to execute all users. Mutex lock only atomic in the file. 
 	int i = 0;
 	while(i<NUM_USERS){
 		putUser(users_p[i]);
