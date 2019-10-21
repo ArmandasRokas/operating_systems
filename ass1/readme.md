@@ -1,6 +1,6 @@
 ## The manual of the shell
 Author: Armandas Rokas (s185144)
-21/9 2019
+21/10 2019
 
 ### Intro
 
