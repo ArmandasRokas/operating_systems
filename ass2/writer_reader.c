@@ -70,7 +70,10 @@ clock_t start, end_write, end_read;
 int main(int argc, char * argv[])
 {
 	if(argc < 2){
-		printf("Error. No argumentes passed. 1 2 or 3 sould be passed\n");
+		printf("Error. No argumentes passed. 1 2 or 3 should be passed.\n");
+		printf("1 - run the program sequentially.\n");
+		printf("2 - run the program using multithreading without mutex protection.\n");
+		printf("3 - run the program using multithreading with mutex protection.\n");
 		exit(EXIT_FAILURE);
 	}
 	
