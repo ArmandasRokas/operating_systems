@@ -1,4 +1,4 @@
 run :
-	gcc -o writer_reader writer_reader.c -lpthread
+	gcc -o main main.c -lpthread
 
 
