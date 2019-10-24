@@ -1,0 +1,17 @@
+The websites I have used:
+https://www.baeldung.com/java-wait-notify
+https://www.programering.com/a/MzN1czNwATQ.html
+https://www.geeksforgeeks.org/socket-programming-in-java/
+https://www.geeksforgeeks.org/multi-threaded-chat-application-set-1/
+https://www.geeksforgeeks.org/multi-threaded-chat-application-set-2/
+http://www.avajava.com/tutorials/lessons/how-do-i-write-the-contents-of-a-file-to-standard-output.html
+https://www.geeksforgeeks.org/singleton-class-java/
+https://www.geeksforgeeks.org/synchronized-in-java/
+https://www.javatpoint.com/java-serversocket-accept-method
+https://howtodoinjava.com/java/io/how-to-create-a-new-file-in-java/
+https://help.ubuntu.com/community/UsingTheTerminal
+https://stackoverflow.com/questions/26967036/how-to-unit-test-a-synchronized-method/33964571
+
+
+Books or material given by the teachers/TA's:
+https://cn.inside.dtu.dk/cnnet/filesharing/download/aa52fcfc-e59e-4e9a-b389-5e61cedda2e0
