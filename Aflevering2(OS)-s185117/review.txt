@@ -1,0 +1,19 @@
+# Peer feedback of the assignment 2
+Reviewer : Armandas Rokas
+Author of the assignment:  Christoffer Detlef s185117
+24/10 - 2019
+
+## 1. idea of the application 
+The idea is about messaging application, but I think that the interesting part here is not a messaging, but a logging function. 
+## 2. does the application use multithreading
+Yes, creates a new thread for every client.
+## 3. does the application use mutual exclusion
+Yes, synchronized java method that logs messages, but I have tried to remove synchronized from the method signature and the program still logged both clients as expected. That means the race condition does not occur in this program at least in logging, so there is no reason to add synchronized in my opinion.
+## 4. does the application idea make sense for multi threading (give a detailed opinion about why or whynot)
+Yes, because the server needs to handle multiple users, where a separate thread is assigned for handling each clients requests. 
+## 5. how well is the program explained.
+Extensive, detailed comments.  
+## 6. what have your learnt from the peers assignment
+I have never done socket programming before, so it was interesting to get familiar with these concepts. 
+## 7. what would you have done differently.
+I would have started making a program that runs into a race condition first, and only then fixing it with synchronized method. The race condition for example could be if one message is inserted inside another message in the log file. So it would give a good reason to use a synchronized method. 
