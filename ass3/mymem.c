@@ -29,7 +29,7 @@ size_t mySize;
 void *myMemory = NULL;
 
 static struct memoryList *head;
-static struct memoryList *next;
+static struct memoryList *next; // Should store value for next fit, where the memoryList er slapt sidst
 
 
 /* initmem must be called prior to mymalloc and myfree.
@@ -48,6 +48,7 @@ static struct memoryList *next;
 
 void initmem(strategies strategy, size_t sz)
 {
+	printf("Size init memory: %d", sz);
 	myStrategy = strategy;
 
 	/* all implementations will need an actual block of memory to use */
@@ -61,7 +62,12 @@ void initmem(strategies strategy, size_t sz)
 	myMemory = malloc(sz);
 	
 	/* TODO: Initialize memory management structure. */
-	 
+	head = (struct memoryList*) malloc(sizeof (struct memoryList));
+       	head->last = NULL;
+	head->next = NULL;
+	head->size = sz;
+	head->alloc = 0;
+	head->ptr = myMemory;	
 
 }
 
@@ -73,13 +79,36 @@ void initmem(strategies strategy, size_t sz)
 
 void *mymalloc(size_t requested)
 {
+	struct memoryList* currBlock = head;
+	printf("\n\n**In mymalloc: %d **\n\n", requested);	
 	assert((int)myStrategy > 0);
+	int found = 0;
 	
 	switch (myStrategy)
 	  {
 	  case NotSet: 
 	            return NULL;
 	  case First:
+		    while(found != 1){
+			printf("currBlock size: %d\n", currBlock->size );
+			printf("currBlock alloc %d\n", currBlock->alloc);
+			if(currBlock->size >= requested && currBlock->alloc == 0){
+				int remainingSize = currBlock->size - requested;
+				currBlock->size = requested;
+				currBlock->alloc = 1;
+				struct memoryList* newBlock = (struct memoryList*) malloc(sizeof (struct memoryList));
+				newBlock->next = currBlock->next;
+				currBlock->next = newBlock;
+				newBlock->last = currBlock;
+				newBlock->size = remainingSize;
+				newBlock->alloc = 0;
+				newBlock->ptr = (char *)currBlock->ptr + requested;
+				printf("\ncurrBlock pointer: %p, newBlock pointer: %p\n", currBlock->ptr, newBlock->ptr);			
+				found = 1;
+			} else{
+				currBlock = currBlock->next;	
+			}
+			}		
 	            return NULL;
 	  case Best:
 	            return NULL;
@@ -113,7 +142,15 @@ int mem_holes()
 /* Get the number of bytes allocated */
 int mem_allocated()
 {
-	return 0;
+	int size = 0;
+	struct memoryList* currBlock = head;
+	while(currBlock != NULL){
+		if(currBlock->alloc == 1){
+			size += currBlock->size;
+		}
+		currBlock = currBlock->next;
+	}
+	return size;
 }
 
 /* Number of non-allocated bytes */
