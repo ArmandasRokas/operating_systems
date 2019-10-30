@@ -61,7 +61,7 @@ void initmem(strategies strategy, size_t sz)
 	myMemory = malloc(sz);
 	
 	/* TODO: Initialize memory management structure. */
-
+	 
 
 }
 
