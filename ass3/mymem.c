@@ -4,7 +4,11 @@
 #include <assert.h>
 #include "mymem.h"
 #include <time.h>
-
+/**
+ * Returns -1 if request can not be allocated
+ *
+*/
+int firstFit(size_t requested);
 
 /* The main structure for implementing memory allocation.
  * You may change this to fit your implementation.
@@ -48,7 +52,7 @@ static struct memoryList *next; // Should store value for next fit, where the me
 
 void initmem(strategies strategy, size_t sz)
 {
-	printf("Size init memory: %d", sz);
+	//printf("Size init memory: %d", sz);
 	myStrategy = strategy;
 
 	/* all implementations will need an actual block of memory to use */
@@ -79,36 +83,16 @@ void initmem(strategies strategy, size_t sz)
 
 void *mymalloc(size_t requested)
 {
-	struct memoryList* currBlock = head;
-	printf("\n\n**In mymalloc: %d **\n\n", requested);	
+	
 	assert((int)myStrategy > 0);
-	int found = 0;
+	
 	
 	switch (myStrategy)
 	  {
 	  case NotSet: 
 	            return NULL;
 	  case First:
-		    while(found != 1){
-			printf("currBlock size: %d\n", currBlock->size );
-			printf("currBlock alloc %d\n", currBlock->alloc);
-			if(currBlock->size >= requested && currBlock->alloc == 0){
-				int remainingSize = currBlock->size - requested;
-				currBlock->size = requested;
-				currBlock->alloc = 1;
-				struct memoryList* newBlock = (struct memoryList*) malloc(sizeof (struct memoryList));
-				newBlock->next = currBlock->next;
-				currBlock->next = newBlock;
-				newBlock->last = currBlock;
-				newBlock->size = remainingSize;
-				newBlock->alloc = 0;
-				newBlock->ptr = (char *)currBlock->ptr + requested;
-				printf("\ncurrBlock pointer: %p, newBlock pointer: %p\n", currBlock->ptr, newBlock->ptr);			
-				found = 1;
-			} else{
-				currBlock = currBlock->next;	
-			}
-			}		
+		        firstFit(requested);
 	            return NULL;
 	  case Best:
 	            return NULL;
@@ -120,10 +104,42 @@ void *mymalloc(size_t requested)
 	return NULL;
 }
 
+int firstFit(size_t requested){
+    struct memoryList* currBlock = head;
+	//printf("\n\n**In mymalloc: %d **\n\n", requested);
+    int found = -1;
+    while(found != 1 && currBlock != NULL){
+		//printf("currBlock size: %d\n", currBlock->size );
+		//printf("currBlock alloc %d\n", currBlock->alloc);
+        if(currBlock->size == requested && currBlock->alloc == 0){
+            currBlock->alloc = 1;
+            found = 1;
+        } else if(currBlock->size > requested && currBlock->alloc == 0){
+			int remainingSize = currBlock->size - requested;
+			currBlock->size = requested;
+			currBlock->alloc = 1;
+			struct memoryList* newBlock = (struct memoryList*) malloc(sizeof (struct memoryList));
+			newBlock->next = currBlock->next;
+			currBlock->next = newBlock;
+			newBlock->last = currBlock;
+			newBlock->size = remainingSize;
+			newBlock->alloc = 0;
+			newBlock->ptr = (char *)currBlock->ptr + requested;
+			//printf("\ncurrBlock pointer: %p, newBlock pointer: %p\n", currBlock->ptr, newBlock->ptr);			
+			found = 1;
+		} else{
+			currBlock = currBlock->next;
+		}
+	}
+    return found;		
+   
+}
+
 
 /* Frees a block of memory previously allocated by mymalloc. */
 void myfree(void* block)
 {
+    // maybe join togather  partitions?
 	return;
 }
 
@@ -247,6 +263,7 @@ strategies strategyFromString(char * strategy)
 /* Use this function to print out the current contents of memory. */
 void print_memory()
 {
+    
 	return;
 }
 
