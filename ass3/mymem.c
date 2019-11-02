@@ -32,7 +32,7 @@ strategies myStrategy = NotSet;    // Current strategy
 size_t mySize;
 void *myMemory = NULL;
 
-static struct memoryList *head;
+static struct memoryList *head; // static only used within compilation unit
 static struct memoryList *next; // Should store value for next fit, where the memoryList er slapt sidst
 
 
@@ -152,7 +152,23 @@ void myfree(void* block)
 /* Get the number of contiguous areas of free space in memory. */
 int mem_holes()
 {
-	return 0;
+    int num_holes = 0;
+	struct memoryList* currBlock = head;
+	while(currBlock != NULL){
+		if(currBlock->alloc == 0){
+			num_holes++;
+		}
+		currBlock = currBlock->next;
+	}
+	return num_holes;
+}
+
+
+
+/* Number of non-allocated bytes */
+int mem_free()
+{
+	return mySize - mem_allocated();
 }
 
 /* Get the number of bytes allocated */
@@ -164,32 +180,56 @@ int mem_allocated()
 		if(currBlock->alloc == 1){
 			size += currBlock->size;
 		}
+        printf("isLocated : %d ", mem_is_alloc(currBlock->ptr + 80));
 		currBlock = currBlock->next;
+        
 	}
 	return size;
-}
-
-/* Number of non-allocated bytes */
-int mem_free()
-{
-	return 0;
 }
 
 /* Number of bytes in the largest contiguous area of unallocated memory */
 int mem_largest_free()
 {
-	return 0;
+    int currLargest = 0;
+    struct memoryList* currBlock = head;
+	while(currBlock != NULL){
+		if(currBlock->alloc == 0 && currBlock->size > currLargest){
+			currLargest = currBlock->size;
+		}
+		currBlock = currBlock->next;
+	}
+	return currLargest;
 }
 
 /* Number of free blocks smaller than "size" bytes. */
 int mem_small_free(int size)
 {
-	return 0;
+    int numSmallFree;
+    struct memoryList* currBlock = head;
+	while(currBlock != NULL){
+		if(currBlock->alloc == 0 && currBlock->size < size){
+			numSmallFree++;
+		}
+		currBlock = currBlock->next;
+	}
+	return numSmallFree;
 }       
 
 char mem_is_alloc(void *ptr)
 {
-        return 0;
+    char isLocated = 0;
+    struct memoryList* currBlock = head;
+	while(currBlock != NULL){
+		if(currBlock->alloc == 1){
+            for(int i = 0; i < currBlock->size; i++){                
+                if(currBlock->ptr + i == ptr){
+                    isLocated = 1;
+                }
+            }
+		}
+		currBlock = currBlock->next;
+	}
+    return isLocated;
 }
 
 /* 
@@ -263,6 +303,11 @@ strategies strategyFromString(char * strategy)
 /* Use this function to print out the current contents of memory. */
 void print_memory()
 {
+    struct memoryList * currMemory = head;
+    while(currMemory != NULL){
+        printf("Size: %d, Alloc: %d\n", currMemory->size, currMemory->alloc);
+        currMemory = currMemory->next;    
+    }
     
 	return;
 }
