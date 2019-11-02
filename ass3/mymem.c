@@ -8,7 +8,7 @@
  * Returns -1 if request can not be allocated
  *
 */
-int firstFit(size_t requested);
+void * firstFit(size_t requested);
 
 /* The main structure for implementing memory allocation.
  * You may change this to fit your implementation.
@@ -92,8 +92,7 @@ void *mymalloc(size_t requested)
 	  case NotSet: 
 	            return NULL;
 	  case First:
-		        firstFit(requested);
-	            return NULL;
+	            return firstFit(requested);
 	  case Best:
 	            return NULL;
 	  case Worst:
@@ -104,8 +103,9 @@ void *mymalloc(size_t requested)
 	return NULL;
 }
 
-int firstFit(size_t requested){
+void * firstFit(size_t requested){
     struct memoryList* currBlock = head;
+    struct memoryList* allocatedBlock = NULL;
 	//printf("\n\n**In mymalloc: %d **\n\n", requested);
     int found = -1;
     while(found != 1 && currBlock != NULL){
@@ -113,6 +113,7 @@ int firstFit(size_t requested){
 		//printf("currBlock alloc %d\n", currBlock->alloc);
         if(currBlock->size == requested && currBlock->alloc == 0){
             currBlock->alloc = 1;
+            allocatedBlock = currBlock;            
             found = 1;
         } else if(currBlock->size > requested && currBlock->alloc == 0){
 			int remainingSize = currBlock->size - requested;
@@ -120,18 +121,22 @@ int firstFit(size_t requested){
 			currBlock->alloc = 1;
 			struct memoryList* newBlock = (struct memoryList*) malloc(sizeof (struct memoryList));
 			newBlock->next = currBlock->next;
+            if(newBlock->next != NULL){
+                newBlock->next->last = newBlock;
+            }
 			currBlock->next = newBlock;
 			newBlock->last = currBlock;
 			newBlock->size = remainingSize;
 			newBlock->alloc = 0;
 			newBlock->ptr = (char *)currBlock->ptr + requested;
 			//printf("\ncurrBlock pointer: %p, newBlock pointer: %p\n", currBlock->ptr, newBlock->ptr);			
+            allocatedBlock = currBlock;
 			found = 1;
 		} else{
 			currBlock = currBlock->next;
 		}
 	}
-    return found;		
+    return allocatedBlock;		
    
 }
 
@@ -139,6 +144,23 @@ int firstFit(size_t requested){
 /* Frees a block of memory previously allocated by mymalloc. */
 void myfree(void* block)
 {
+    struct memoryList *  blockToFree = (struct memoryList*) block;
+    blockToFree->alloc = 0;
+    if(blockToFree->last != NULL && blockToFree->last->alloc == 0 ){
+        blockToFree->last->size = blockToFree->last->size + blockToFree->size;
+        blockToFree->last->next = blockToFree->next;
+        blockToFree->next->last = blockToFree->last;
+        struct memoryList * currBlock = blockToFree->last;        
+        free(blockToFree);
+        blockToFree = currBlock;
+        
+    }    
+    if(blockToFree->next != NULL && blockToFree->next->alloc ==0 ){
+        blockToFree->next->size = blockToFree->next->size + blockToFree->size;
+        blockToFree->next->last = blockToFree->last;
+        blockToFree->last->next = blockToFree->next;
+        free(blockToFree); 
+    }
     // maybe join togather  partitions?
 	return;
 }
@@ -180,7 +202,6 @@ int mem_allocated()
 		if(currBlock->alloc == 1){
 			size += currBlock->size;
 		}
-        printf("isLocated : %d ", mem_is_alloc(currBlock->ptr + 80));
 		currBlock = currBlock->next;
         
 	}
@@ -308,7 +329,18 @@ void print_memory()
         printf("Size: %d, Alloc: %d\n", currMemory->size, currMemory->alloc);
         currMemory = currMemory->next;    
     }
-    
+    printf("\nPrinting backwards\n");
+    currMemory = head;
+    while(currMemory != NULL){
+        if(currMemory->next==NULL){
+            struct memoryList * backList = currMemory;            
+            while(backList != NULL){
+                printf("Size: %d, Alloc: %d\n", backList->size, backList->alloc);
+                backList = backList->last;
+            }
+        }
+        currMemory = currMemory->next;    
+    }
 	return;
 }
 
@@ -348,7 +380,7 @@ void try_mymem(int argc, char **argv) {
 	d = mymalloc(50);
 	myfree(a);
 	e = mymalloc(25);
-	
+	myfree(b);
 	print_memory();
 	print_memory_status();
 	
