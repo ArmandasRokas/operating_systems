@@ -136,7 +136,7 @@ void * firstFit(size_t requested){
 			currBlock = currBlock->next;
 		}
 	}
-    return allocatedBlock;		
+    return allocatedBlock->ptr;		
    
 }
 
@@ -144,8 +144,22 @@ void * firstFit(size_t requested){
 /* Frees a block of memory previously allocated by mymalloc. */
 void myfree(void* block)
 {
-    struct memoryList *  blockToFree = (struct memoryList*) block;
+    
+    struct memoryList *  blockToFree = NULL;
+
+    // Search for block in memory management data structure
+    struct memoryList* currBlock = head;
+	while(currBlock != NULL){
+		if(currBlock->ptr == block){
+			blockToFree = currBlock;
+            break;
+		}
+		currBlock = currBlock->next;
+	}
+    
+
     blockToFree->alloc = 0;
+
     if(blockToFree->last != NULL && blockToFree->last->alloc == 0 ){
         blockToFree->last->size = blockToFree->last->size + blockToFree->size;
         blockToFree->last->next = blockToFree->next;
@@ -161,7 +175,6 @@ void myfree(void* block)
         blockToFree->last->next = blockToFree->next;
         free(blockToFree); 
     }
-    // maybe join togather  partitions?
 	return;
 }
 
@@ -225,10 +238,10 @@ int mem_largest_free()
 /* Number of free blocks smaller than "size" bytes. */
 int mem_small_free(int size)
 {
-    int numSmallFree;
+    int numSmallFree = 0;
     struct memoryList* currBlock = head;
 	while(currBlock != NULL){
-		if(currBlock->alloc == 0 && currBlock->size < size){
+		if(currBlock->alloc == 0 && currBlock->size <= size){
 			numSmallFree++;
 		}
 		currBlock = currBlock->next;
