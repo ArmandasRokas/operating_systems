@@ -65,6 +65,7 @@ void initmem(strategies strategy, size_t sz)
 	/* TODO: release any other memory you were using for bookkeeping when doing a re-initialization! */
     struct memoryList* currBlock;
     struct memoryList* nextCurrBlock = head;
+  
 	while(nextCurrBlock != NULL){
         currBlock = nextCurrBlock;
 		nextCurrBlock = nextCurrBlock->next;

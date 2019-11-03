@@ -4,4 +4,4 @@
 - `./mem -try first`
 
 ### Todo
-- Testen fejler, fordi jeg skal returnere `newBlock->alloc` pointer i stedet af pointer to memoryList. Det giver mening, men jeg skal lave om min myfree også til lidt mere kompliseret, hvor jeg skal finde ud af først, hvilken blok tilhører.
+- skriv til Bujit at jeg ikke kan komme idag, fordi jeg har kursus, men spørge om der er fejl med stress test, fordi jeg får signal 11 fejl. Har du hørt at der nogen der har bestået testen?
