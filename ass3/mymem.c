@@ -4,11 +4,13 @@
 #include <assert.h>
 #include "mymem.h"
 #include <time.h>
+#include <limits.h>
 /**
  * Returns -1 if request can not be allocated
  *
 */
 void * firstFit(size_t requested);
+void * bestFit(size_t requested);
 
 /* The main structure for implementing memory allocation.
  * You may change this to fit your implementation.
@@ -61,6 +63,14 @@ void initmem(strategies strategy, size_t sz)
 	if (myMemory != NULL) free(myMemory); /* in case this is not the first time initmem2 is called */
 
 	/* TODO: release any other memory you were using for bookkeeping when doing a re-initialization! */
+    struct memoryList* currBlock;
+    struct memoryList* nextCurrBlock = head;
+	while(nextCurrBlock != NULL){
+        currBlock = nextCurrBlock;
+		nextCurrBlock = nextCurrBlock->next;
+        free(currBlock);
+        printf("F");
+	}
 
 
 	myMemory = malloc(sz);
@@ -94,7 +104,7 @@ void *mymalloc(size_t requested)
 	  case First:
 	            return firstFit(requested);
 	  case Best:
-	            return NULL;
+	            return bestFit(requested);
 	  case Worst:
 	            return NULL;
 	  case Next:
@@ -138,6 +148,50 @@ void * firstFit(size_t requested){
 	}
     return allocatedBlock->ptr;		
    
+}
+
+void * bestFit(size_t requested){
+    int remainingSize = INT_MAX;
+    struct memoryList* currBestFit = NULL;
+    // Searching for best fit
+    struct memoryList* currBlock = head;
+	while(currBlock != NULL){
+       
+		if(currBlock->alloc == 0 && (currBlock->size-requested) < remainingSize){
+                        
+            remainingSize = currBlock->size-requested; 			
+            currBestFit = currBlock;
+		}
+		currBlock = currBlock->next;
+	}
+    // Allocating best fit
+    if(currBestFit == NULL){
+        return NULL;
+    } 
+    if(currBestFit->size == requested){
+        
+        currBestFit->alloc = 1;         
+        return  currBestFit->ptr;
+    } else{
+        // making new block and linking together
+		int remainingSize = currBestFit->size - requested;
+		currBestFit->size = requested;
+		currBestFit->alloc = 1;
+		struct memoryList* newBlock = (struct memoryList*) malloc(sizeof (struct memoryList));
+		newBlock->next = currBestFit->next;
+        
+        if(newBlock->next != NULL){
+              newBlock->next->last = newBlock;
+        }
+		currBestFit->next = newBlock;
+		newBlock->last = currBestFit;
+		newBlock->size = remainingSize;
+		newBlock->alloc = 0;
+		newBlock->ptr = (char *)currBestFit->ptr + requested;
+
+        return currBestFit->ptr;
+    }
+    
 }
 
 
@@ -342,6 +396,7 @@ void print_memory()
         printf("Size: %d, Alloc: %d\n", currMemory->size, currMemory->alloc);
         currMemory = currMemory->next;    
     }
+    /*
     printf("\nPrinting backwards\n");
     currMemory = head;
     while(currMemory != NULL){
@@ -353,7 +408,7 @@ void print_memory()
             }
         }
         currMemory = currMemory->next;    
-    }
+    }*/
 	return;
 }
 
@@ -384,8 +439,8 @@ void try_mymem(int argc, char **argv) {
 	/* A simple example.  
 	   Each algorithm should produce a different layout. */
 	
-	initmem(strat,500);
-	
+	initmem(strat,290);
+	/*
 	a = mymalloc(100);
 	b = mymalloc(100);
 	c = mymalloc(100);
@@ -393,7 +448,19 @@ void try_mymem(int argc, char **argv) {
 	d = mymalloc(50);
 	myfree(a);
 	e = mymalloc(25);
-	myfree(b);
+	myfree(b);*/
+
+	a = mymalloc(20);
+	b = mymalloc(100);
+	c = mymalloc(40);
+	d = mymalloc(100);
+	e = mymalloc(30);
+    myfree(a);
+    myfree(c);
+    myfree(e);
+    a = mymalloc(25);  
+
+
 	print_memory();
 	print_memory_status();
 	
