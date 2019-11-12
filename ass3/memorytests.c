@@ -64,8 +64,7 @@ void do_randomized_test(int strategyToUse, int totalSize, float fillRatio, int m
 			{
 				int newBlockSize = (rand()%(maxBlockSize-minBlockSize+1))+minBlockSize;
 				/* allocate */
-                        printf("newBlockSize: %d \n" , newBlockSize );
-        fflush(stdin);
+           
 				void * pointer = mymalloc(newBlockSize);
 				if (pointer != NULL)
 					pointers[storedPointers++] = pointer;
@@ -92,8 +91,6 @@ void do_randomized_test(int strategyToUse, int totalSize, float fillRatio, int m
 				pointers[chosen] = pointers[storedPointers-1];
 
 				storedPointers--;
-                printf("FREE\n" );
-                fflush(stdin);
 				myfree(pointer);
 			}
 
@@ -101,8 +98,6 @@ void do_randomized_test(int strategyToUse, int totalSize, float fillRatio, int m
 			sum_hole_size += (mem_free() / mem_holes());
 			sum_allocated += mem_allocated();
 			sum_small += mem_small_free(smallBlockSize);
-            printf("DEBUG\n" );
-            fflush(stdin);
 		}
 
 		clock_gettime(CLOCK_REALTIME, &execend);

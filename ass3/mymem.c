@@ -53,10 +53,7 @@ static struct memoryList *next; // Should store value for next fit, where the me
 */
 
 void initmem(strategies strategy, size_t sz)
-{
-    printf("initmem() called");
-    fflush(stdin); 	
-    //printf("Size init memory: %d", sz);
+{	
 	myStrategy = strategy;
 
 	/* all implementations will need an actual block of memory to use */
@@ -72,7 +69,6 @@ void initmem(strategies strategy, size_t sz)
         currBlock = nextCurrBlock;
 		nextCurrBlock = nextCurrBlock->next;
         free(currBlock);
-        printf("F");
 	}
 
 
@@ -80,7 +76,7 @@ void initmem(strategies strategy, size_t sz)
 	
 	/* TODO: Initialize memory management structure. */
 	head = (struct memoryList*) malloc(sizeof (struct memoryList));
-       	head->last = NULL;
+    head->last = NULL;
 	head->next = NULL;
 	head->size = sz;
 	head->alloc = 0;
@@ -119,16 +115,10 @@ void *mymalloc(size_t requested)
 void * firstFit(size_t requested){
     struct memoryList* currBlock = head;
     struct memoryList* allocatedBlock = NULL;
-	//printf("\n\n**In mymalloc: %d **\n\n", requested);
     int found = -1;
     while(found != 1 && currBlock != NULL){
 
-		//printf("currBlock size: %d\n", currBlock->size );
-		//printf("currBlock alloc %d\n", currBlock->alloc);
         if(currBlock->size == requested && currBlock->alloc == 0){
- printf("start  fit\n");
-    fflush(stdin);
-              
             currBlock->alloc = 1;
             allocatedBlock = currBlock;            
             found = 1;
@@ -252,8 +242,6 @@ void myfree(void* block)
         blockToFree = currBlock;
         
     }    
-                printf("LAST myfree\n");
-    fflush(stdin); 
 
     if(blockToFree->next != NULL && blockToFree->next->alloc ==0 ){
 
