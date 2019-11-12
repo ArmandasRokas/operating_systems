@@ -54,7 +54,9 @@ static struct memoryList *next; // Should store value for next fit, where the me
 
 void initmem(strategies strategy, size_t sz)
 {
-	//printf("Size init memory: %d", sz);
+    printf("initmem() called");
+    fflush(stdin); 	
+    //printf("Size init memory: %d", sz);
 	myStrategy = strategy;
 
 	/* all implementations will need an actual block of memory to use */
@@ -120,18 +122,25 @@ void * firstFit(size_t requested){
 	//printf("\n\n**In mymalloc: %d **\n\n", requested);
     int found = -1;
     while(found != 1 && currBlock != NULL){
+
 		//printf("currBlock size: %d\n", currBlock->size );
 		//printf("currBlock alloc %d\n", currBlock->alloc);
         if(currBlock->size == requested && currBlock->alloc == 0){
+ printf("start  fit\n");
+    fflush(stdin);
+              
             currBlock->alloc = 1;
             allocatedBlock = currBlock;            
             found = 1;
         } else if(currBlock->size > requested && currBlock->alloc == 0){
+
 			int remainingSize = currBlock->size - requested;
 			currBlock->size = requested;
 			currBlock->alloc = 1;
 			struct memoryList* newBlock = (struct memoryList*) malloc(sizeof (struct memoryList));
+
 			newBlock->next = currBlock->next;
+
             if(newBlock->next != NULL){
                 newBlock->next->last = newBlock;
             }
@@ -139,14 +148,19 @@ void * firstFit(size_t requested){
 			newBlock->last = currBlock;
 			newBlock->size = remainingSize;
 			newBlock->alloc = 0;
-			newBlock->ptr = (char *)currBlock->ptr + requested;
-			//printf("\ncurrBlock pointer: %p, newBlock pointer: %p\n", currBlock->ptr, newBlock->ptr);			
+			newBlock->ptr = (char *)currBlock->ptr + requested;			
             allocatedBlock = currBlock;
 			found = 1;
 		} else{
+
+              
+ 
 			currBlock = currBlock->next;
 		}
 	}
+    if(allocatedBlock == NULL){
+        return NULL;
+    }
     return allocatedBlock->ptr;		
    
 }
@@ -157,7 +171,6 @@ void * bestFit(size_t requested){
     // Searching for best fit
     struct memoryList* currBlock = head;
 	while(currBlock != NULL){
-       
 		if(currBlock->alloc == 0 && (currBlock->size-requested) < remainingSize){
                         
             remainingSize = currBlock->size-requested; 			
@@ -170,16 +183,18 @@ void * bestFit(size_t requested){
         return NULL;
     } 
     if(currBestFit->size == requested){
-        
+
         currBestFit->alloc = 1;         
         return  currBestFit->ptr;
     } else{
+
         // making new block and linking together
 		int remainingSize = currBestFit->size - requested;
 		currBestFit->size = requested;
 		currBestFit->alloc = 1;
 		struct memoryList* newBlock = (struct memoryList*) malloc(sizeof (struct memoryList));
 		newBlock->next = currBestFit->next;
+                
         
         if(newBlock->next != NULL){
               newBlock->next->last = newBlock;
@@ -199,11 +214,17 @@ void * bestFit(size_t requested){
 /* Frees a block of memory previously allocated by mymalloc. */
 void myfree(void* block)
 {
+            
+
     
     struct memoryList *  blockToFree = NULL;
 
     // Search for block in memory management data structure
     struct memoryList* currBlock = head;
+        if(currBlock == NULL){
+        printf("Head is null\n");
+        return;
+    }      
 	while(currBlock != NULL){
 		if(currBlock->ptr == block){
 			blockToFree = currBlock;
@@ -212,24 +233,43 @@ void myfree(void* block)
 		currBlock = currBlock->next;
 	}
     
-
+    if(blockToFree == NULL){
+        printf("Could not found block to free\n");
+        return;
+    }
+    
     blockToFree->alloc = 0;
 
+   
     if(blockToFree->last != NULL && blockToFree->last->alloc == 0 ){
         blockToFree->last->size = blockToFree->last->size + blockToFree->size;
         blockToFree->last->next = blockToFree->next;
-        blockToFree->next->last = blockToFree->last;
+        if(blockToFree->next != NULL){
+            blockToFree->next->last = blockToFree->last;
+        }
         struct memoryList * currBlock = blockToFree->last;        
         free(blockToFree);
         blockToFree = currBlock;
         
     }    
+                printf("LAST myfree\n");
+    fflush(stdin); 
+
     if(blockToFree->next != NULL && blockToFree->next->alloc ==0 ){
+
+
         blockToFree->next->size = blockToFree->next->size + blockToFree->size;
+
         blockToFree->next->last = blockToFree->last;
-        blockToFree->last->next = blockToFree->next;
+        if(blockToFree->last != NULL){  
+            blockToFree->last->next = blockToFree->next;    
+        } else {
+            head = blockToFree->next;
+        }
+
         free(blockToFree); 
     }
+
 	return;
 }
 
