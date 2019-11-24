@@ -3,9 +3,9 @@
 Author: Armandas Rokas (s185144)
 08/11 2019
 
-### Intro
-
-This readme describes the implementation of best-fit and first-fit strategies for selecting a block, where a new memory request needs to be placed. 
+### Strategies implemented
+- Best fit
+- First fit
 
 ### Guide
 
@@ -56,9 +56,6 @@ It could cause that the free blocks will become too small to satisfy the request
 - Worst-fit
   - Advantage:  Reduces the rate of production of small gaps. 
   - Disadvantage:  If a process requiring larger memory arrives at a later stage then it cannot be accommodated as the largest hole is already split and occupied. 
-- References:
-  -  https://www.tutorialspoint.com/operating_system/os_memory_allocation_qa2.htm 
-  - Stallings William, Operating Systems Internals and Design Principles 9e. ISBN : 0134670957
 ##### 4) Run the stress test on all strategies, and look at the results (tests.out). What is the significance of "Average largest free block"?  Which strategy generally has the best performance in this metric?  Why do you think this is?
 
 - Stress test no working
@@ -78,7 +75,7 @@ The second case is when there are some allocated blocks between the free small b
 |###|
 |   |		error no space	
 |###|     <--- 	|###|
-|   |			|###|
+|   |		|###|
 |###|
 |   |
 |###|

@@ -112,6 +112,52 @@ void *mymalloc(size_t requested)
 	return NULL;
 }
 
+void * worstFit(size_t requested){
+    int remainingSize = 0;
+    struct memoryList* currWorstFit = NULL;
+    // Searching for best fit
+    struct memoryList* currBlock = head;
+	while(currBlock != NULL){
+		if(currBlock->alloc == 0 && (currBlock->size-requested) > remainingSize){
+                        
+            remainingSize = currBlock->size-requested; 			
+            currWorstFit = currBlock;
+		}
+		currBlock = currBlock->next;
+	}
+    // Allocating best fit
+    if(currWorstFit == NULL){
+        return NULL;
+    } 
+    if(currWorstFit->size == requested){
+
+        currWorstFit->alloc = 1;         
+        return  currWorstFit->ptr;
+    } else{
+
+        // making new block and linking together
+		int remainingSize = currWorstFit->size - requested;
+		currWorstFit->size = requested;
+		currWorstFit->alloc = 1;
+		struct memoryList* newBlock = (struct memoryList*) malloc(sizeof (struct memoryList));
+		newBlock->next = currWorstFit->next;
+                
+        
+        if(newBlock->next != NULL){
+              newBlock->next->last = newBlock;
+        }
+		currWorstFit->next = newBlock;
+		newBlock->last = currWorstFit;
+		newBlock->size = remainingSize;
+		newBlock->alloc = 0;
+		newBlock->ptr = (char *)currWorstFit->ptr + requested;
+
+        return currWorstFit->ptr;
+    }
+    
+}
+
+
 void * firstFit(size_t requested){
     struct memoryList* currBlock = head;
     struct memoryList* allocatedBlock = NULL;
